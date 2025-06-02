@@ -1,75 +1,118 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { Alert, Text, TouchableOpacity, StyleSheet, ActivityIndicator, View } from 'react-native';
+import * as Location from 'expo-location';
+import { supabase } from '../../lib/supabase'; // Ensure this path points to your Supabase client file
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+const SendSOS = () => {
+  const [loading, setLoading] = useState(false);
 
-export default function HomeScreen() {
+  const sendSOSRequest = async () => {
+    setLoading(true);
+
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission Denied', 'Location permission is required to send an SOS.');
+        setLoading(false);
+        return;
+      }
+
+      const location = await Location.getCurrentPositionAsync({});
+      const { latitude, longitude } = location.coords;
+
+      const { data, error } = await supabase.from('sos_alerts').insert([
+        {
+          user_id: '123', // Replace with actual user ID if needed
+          latitude,
+          longitude,
+        },
+      ]);
+
+      if (error) {
+        console.error('Supabase Error:', error);
+        Alert.alert('Error', `Failed to send SOS: ${error.message}`);
+      } else {
+        console.log('Insert successful:', data);
+        Alert.alert('Success', 'SOS sent successfully!');
+      }
+    } catch (error) {
+      console.error('Unexpected Error:', error);
+      Alert.alert('Error', 'Something went wrong. Try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    <View style={styles.container}>
+      <Text style={styles.heading}>Disaster Management System</Text>
+      <Text style={styles.description}>
+        This is a comprehensive app for the user to get help during a disaster from NGOs and Government.
+      </Text>
+
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity
+          style={[styles.button, loading && styles.buttonDisabled]}
+          onPress={sendSOSRequest}
+          disabled={loading}
+        >
+          {loading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.buttonText}>Send SOS</Text>
+          )}
+        </TouchableOpacity>
+      </View>
+    </View>
   );
-}
+};
+
+export default SendSOS;
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
+  container: {
+    flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
-    gap: 8,
+    padding: 20,
+    backgroundColor: '#f4f4f9',
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  heading: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#d32f2f',
+    textAlign: 'center',
+    marginBottom: 20,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  description: {
+    fontSize: 18,
+    textAlign: 'center',
+    marginBottom: 30,
+    color: '#555',
+    paddingHorizontal: 20,
+  },
+  buttonContainer: {
+    marginTop: 30,
+    width: '80%',
+  },
+  button: {
+    backgroundColor: '#d32f2f',
+    paddingVertical: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 3,
+    flexDirection: 'row',
+    borderWidth: 1,
+    borderColor: '#b71c1c',
+  },
+  buttonDisabled: {
+    backgroundColor: '#e57373',
+  },
+  buttonText: {
+    fontSize: 18,
+    color: 'white',
+    fontWeight: 'bold',
+    marginLeft: 10,
   },
 });
