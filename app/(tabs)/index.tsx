@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { Alert, Text, TouchableOpacity, StyleSheet, ActivityIndicator, View } from 'react-native';
 import * as Location from 'expo-location';
+import React, { useState } from 'react';
+import { ActivityIndicator, Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { supabase } from '../../lib/supabase'; // Ensure this path points to your Supabase client file
 
 const SendSOS = () => {
@@ -20,11 +20,13 @@ const SendSOS = () => {
       const location = await Location.getCurrentPositionAsync({});
       const { latitude, longitude } = location.coords;
 
-      const { data, error } = await supabase.from('sos_alerts').insert([
+      const { data, error } = await supabase.from('sos_report').insert([
         {
-          user_id: '123', // Replace with actual user ID if needed
+          // id: '123', // Replace with actual user ID if needed
           latitude,
           longitude,
+          status: 'pending',
+          created_at: new Date().toISOString(),
         },
       ]);
 
