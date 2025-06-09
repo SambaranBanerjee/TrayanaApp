@@ -1,19 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Text } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
-import * as Location from 'expo-location';
-
+import * as Location from "expo-location";
+import React, { useEffect, useState } from "react";
+import { StyleSheet, Text, View } from "react-native";
+import MapView, { Marker } from "react-native-maps";
 
 // Removed duplicate styles declaration
 const Search = () => {
-  const [location, setLocation] = useState<Location.LocationObjectCoords | null>(null);
+  const [location, setLocation] =
+    useState<Location.LocationObjectCoords | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        setErrorMsg('Permission to access location was denied');
+      if (status !== "granted") {
+        setErrorMsg("Permission to access location was denied");
         return;
       }
 
@@ -23,7 +23,11 @@ const Search = () => {
   }, []);
 
   if (!location) {
-    return <View style={styles.container}><Text>Loading map...</Text></View>;
+    return (
+      <View style={styles.container}>
+        <Text>Loading map...</Text>
+      </View>
+    );
   }
 
   return (
@@ -50,12 +54,12 @@ const Search = () => {
 };
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      paddingBottom: 60, // Add padding to prevent overlap with the tab bar
-    },
-    map: {
-      flex: 1,
-    },
-  });
+  container: {
+    flex: 1,
+    paddingBottom: 60, // Add padding to prevent overlap with the tab bar
+  },
+  map: {
+    flex: 1,
+  },
+});
 export default Search;
