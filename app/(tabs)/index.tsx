@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { supabase } from "../../lib/supabase"; // Ensure this path points to your Supabase client file
+import { supabase } from "../../lib/supabase";
 
 const SendSOS = () => {
   const [loading, setLoading] = useState(false);
@@ -32,7 +32,6 @@ const SendSOS = () => {
 
       const { data, error } = await supabase.from("sosReport").insert([
         {
-          // id: '123', // Replace with actual user ID if needed
           latitude,
           longitude,
           status: "pending",

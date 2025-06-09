@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
-import { Button, Text, TouchableOpacity, StyleSheet, View, Alert } from 'react-native';
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import YoutubeIframe from 'react-native-youtube-iframe';
 
 const Videos: React.FC = () => {
-  const [videoId, setVideoId] = useState<string | null>(null); // State to manage the selected video ID
+  const [videoId, setVideoId] = useState<string | null>(null); 
 
-  // Function to handle video button press
   const handleVideoPress = (id: string) => {
-    setVideoId(id); // Set the video ID to play
+    setVideoId(id); 
   };
 
   return (
@@ -20,14 +19,14 @@ const Videos: React.FC = () => {
       {/* Video Buttons */}
       <TouchableOpacity
         style={styles.button}
-        onPress={() => handleVideoPress('NcZ2UrbSMns')} // Pass the YouTube video ID
+        onPress={() => handleVideoPress('NcZ2UrbSMns')} 
       >
         <Text>Video 1</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.button}
-        onPress={() => handleVideoPress('another_video_id')} // Pass another YouTube video ID
+        onPress={() => handleVideoPress('another_video_id')}
       >
         <Text>Video 2</Text>
       </TouchableOpacity>
@@ -38,8 +37,8 @@ const Videos: React.FC = () => {
           <YoutubeIframe
             height={200}
             width={300}
-            videoId={videoId as string} // YouTube video ID
-            play={true} // Autoplay the video
+            videoId={videoId as string} 
+            play={true} 
             onChangeState={(event: string) => {
               if (event === 'ended') {
             Alert.alert('Video Ended', 'The video has finished playing.');
